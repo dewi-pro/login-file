@@ -1,85 +1,88 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 
-import { ADD_USER, GET_USER } from "./graphql/queries";
+import { ADD_USER } from "./graphql/queries";
 import { Route, Switch } from "react-router-dom";
 
 import login from "./login";
 
-const updateCache = (cache, { data }) => {
-    const existinguser = cache.readQuery({
-      query: GET_USER,
-    });
+export default () => {
 
-    const newuser = data.insert_user;
-  cache.writeQuery({
-    query: GET_USER,
-    data: { user: [...existinguser.user, newuser] },
-  });
-};
+    const [user, setUser] = useState({
+        first_name: "",
+        last_name: "",
+        email: "",
+        password: ""
+    })
 
-export default  () => {
-        const [first_name, setfn] = useState("");
-        const [last_name, setln] = useState("");
-        const [email, sete] = useState("");
-        const [password, setp] = useState("");
-        const [adduser] = useMutation(ADD_USER, { update: updateCache});
+    const [adduser] = useMutation(ADD_USER);
 
-        const submituser = () => {
-            adduser({ variables: { first_name, last_name, email, password } });
-            setfn("");setln("");sete("");setp("");
-            };
+    const submituser = () => {
+        console.log("data ==>", user.first_name, user.last_name, user.email, user.password)
+        adduser({ variables: { first_name: user.first_name, last_name: user.last_name, email: user.email, password: user.password } }).then(resp => {
+            console.log("resp ==>", resp.data)
+        }, err => {
+            console.log("err ==>", err)
+            alert("Error...", err)
+        });
+        setUser({
+            first_name: "",
+            last_name: "",
+            email: "",
+            password: ""
+        })
+    };
 
-        return (
+    return (
 
-            <form onSubmit={(e)=>{e.preventDefault();}}>
-                <h3>Register</h3>
+        <form onSubmit={(e) => { e.preventDefault(); }}>
+            <h3>Register</h3>
 
-                <div className="form-group">
-                    <label>First name</label>
-                    <input type="text" 
-                            className="form-control" 
-                            placeholder="First name"
-                            value={first_name}
-                            onChange={(e) => setfn(e.target.value)} />
-                </div>
+            <div className="form-group">
+                <label>First name</label>
+                <input type="text"
+                    className="form-control"
+                    placeholder="First name"
+                    value={user.first_name}
+                    onChange={(e) => setUser({...user, first_name: e.target.value})} />
+            </div>
 
-                <div className="form-group">
-                    <label>Last name</label>
-                    <input type="text" 
-                            className="form-control" 
-                            placeholder="Last name" 
-                            value={last_name}
-                            onChange={(e) => setln(e.target.value)}/>
-                </div>
+            <div className="form-group">
+                <label>Last name</label>
+                <input type="text"
+                    className="form-control"
+                    placeholder="Last name"
+                    value={user.last_name}
+                    onChange={(e) => setUser({...user, last_name: e.target.value})} />
+            </div>
 
-                <div className="form-group">
-                    <label>Email</label>
-                    <input type="email" 
-                            className="form-control" 
-                            placeholder="Enter email" 
-                            value={email}
-                            onChange={(e) => sete(e.target.value)}/>
-                </div>
+            <div className="form-group">
+                <label>Email</label>
+                <input type="email"
+                    className="form-control"
+                    placeholder="Enter email"
+                    value={user.email}
+                    onChange={(e) => setUser({...user, email: e.target.value})} />
+            </div>
 
-                <div className="form-group">
-                    <label>Password</label>
-                    <input type="password" 
-                            className="form-control" 
-                            placeholder="Enter password" 
-                            value={password}
-                            onChange={(e) => setp(e.target.value)}/>
-                </div>
+            <div className="form-group">
+                <label>Password</label>
+                <input type="text"
+                    className="form-control"
+                    placeholder="Enter password"
+                    value={user.password}
+                    onChange={(e) => setUser({...user, password: e.target.value})} />
+            </div>
 
-                <button type="submit" className="btn btn-dark btn-lg btn-block" onClick={submituser}>Register</button>
-                <p className="forgot-password text-right">
-                    Already registered <a href="/sign-in">log in?</a>
-                </p>
-                <Switch>
+            <button type="submit" className="btn btn-dark btn-lg btn-block" onClick={submituser}>Register</button>
+            <p className="forgot-password text-right">
+                Already registered <a href="/sign-in">log in?</a>
+            </p>
+            <Switch>
 
                 <Route path="/sign-in" component={login} />
-                </Switch>
+            </Switch>
 
-            </form>
-        );
-        };
+        </form>
+    );
+};
