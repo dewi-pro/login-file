@@ -8,6 +8,7 @@ import Dashboard from "./components/dashboard";
 import Login from "./components/login";
 import SignUp from "./components/signup";
 import Update from './components/dashboard/update';
+import addplayer from './components/dashboard/addplayer';
 
 const client = new ApolloClient({
   uri: "https://eternal-goshawk-27.hasura.app/v1/graphql",
@@ -45,6 +46,7 @@ function App() {
               <Route path="/sign-up" component={SignUp} />
               <Route path="/dash" component={Dashboard} />
               <Route path="/update" component={Update} />
+              <Route path="/add" component={addplayer} />
             </Switch>
           </div>
         </div>
